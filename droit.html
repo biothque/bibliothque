@@ -1,148 +1,183 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
-  <title>Bibliothèque de Droit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bibliothèque Numérique</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #e6ecf0;
-      padding: 20px;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #007bff;
+      color: white;
+      padding: 1rem;
+      text-align: center;
     }
 
     .container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
+      padding: 2rem;
     }
 
-    .livre {
-      width: 200px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      text-align: center;
-      padding: 10px;
-      cursor: pointer;
-      transition: transform 0.2s;
+    .search-bar {
+      margin-bottom: 1.5rem;
     }
 
-    .livre:hover {
-      transform: scale(1.05);
-    }
-
-    .livre img {
-      width: 100%;
+    .book {
+      background-color: white;
       border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1rem;
+      padding: 1rem;
     }
 
-    .livre h3 {
-      margin: 10px 0 5px;
-      font-size: 16px;
+    .book h3 {
+      margin: 0 0 0.5rem 0;
     }
 
-    .livre p {
-      font-size: 14px;
-      color: #666;
+    .book-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
     }
 
-    .drawer {
-      position: fixed;
-      top: 0;
-      right: -100%;
+    .book iframe {
       width: 100%;
-      height: 100%;
-      background: #fff;
-      box-shadow: -4px 0 10px rgba(0,0,0,0.3);
-      transition: right 0.3s ease;
-      z-index: 999;
+      height: 300px;
+      margin-top: 1rem;
     }
 
-    .drawer.open {
-      right: 0;
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 2rem;
     }
 
-    .drawer iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    .close {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      font-size: 28px;
+    .pagination button {
+      margin: 0 0.5rem;
+      padding: 0.5rem 1rem;
       cursor: pointer;
-      z-index: 1000;
-      color: red;
     }
   </style>
 </head>
+
 <body>
+  <header>
+    <h1>Bibliothèque Numérique</h1>
+  </header>
 
-  <h1>Bibliothèque de Droit</h1>
-  <div class="container" id="bibliotheque"></div>
+  <div class="container">
+    <input type="text" id="searchInput" class="search-bar" placeholder="Rechercher un livre..." onkeyup="searchBooks()">
 
-  <div class="drawer" id="drawer">
-    <span class="close" id="closeBtn">&times;</span>
-    <iframe id="pdfFrame"></iframe>
+    <div id="bookList"></div>
+
+    <div class="pagination">
+      <button onclick="prevPage()">&laquo; Précédent</button>
+      <span id="pageIndicator"></span>
+      <button onclick="nextPage()">Suivant &raquo;</button>
+    </div>
   </div>
 
   <script>
-    const ouvrages = [
-      {
-        titre: "Marché public",
-        auteur: "J.L Esambo",
-        image: "droit.jpeg",
-        pdf: "Marchés public - J.L Esambo.pdf"
-      },
-      {
-        titre: "Code OHADA expliqué",
-        auteur: "Maître Elodie Nsimire",
-        image: "droit.jpeg",
-        pdf: "https://drive.google.com/file/d/1Kre8Gx123ABCDEF/preview"
-      },
-      {
-        titre: "Droit numérique",
-        auteur: "Ordonnance-loi",
-        image: "droit.jpeg",
-        pdf: "https://drive.google.com/file/d/1ABCDxyz123/preview"
-      }
+    const books = [
+      { title: "Anatomie Générale", driveId: "DRIVE_FILE_ID_1" },
+      { title: "Physiologie Humaine", driveId: "DRIVE_FILE_ID_2" },
+      { title: "Pathologie", driveId: "DRIVE_FILE_ID_3" },
+      // ... Ajoutez jusqu'à 50 ouvrages ici
     ];
 
-    const bibliotheque = document.getElementById('bibliotheque');
-    const drawer = document.getElementById('drawer');
-    const pdfFrame = document.getElementById('pdfFrame');
-    const closeBtn = document.getElementById('closeBtn');
+    const booksPerPage = 16;
+    let currentPage = 1;
 
-    ouvrages.forEach(livre => {
-      const div = document.createElement('div');
-      div.className = 'livre';
-      div.innerHTML = `
-        <img src="${livre.image}" alt="${livre.titre}">
-        <h3>${livre.titre}</h3>
-        <p>${livre.auteur}</p>
-      `;
-      div.addEventListener('click', () => {
-        let pdfUrl = livre.pdf;
-        if (!pdfUrl.startsWith("http")) {
-          pdfUrl = encodeURIComponent(pdfUrl) + "#toolbar=0&navpanes=0";
-        } else if (pdfUrl.includes("drive.google.com")) {
-          // Rien à faire, le lien preview est déjà correct
-        }
-        pdfFrame.src = pdfUrl;
-        drawer.classList.add('open');
+    function renderBooks() {
+      const bookList = document.getElementById("bookList");
+      bookList.innerHTML = "";
+
+      const startIndex = (currentPage - 1) * booksPerPage;
+      const endIndex = startIndex + booksPerPage;
+      const paginatedBooks = books.slice(startIndex, endIndex);
+
+      paginatedBooks.forEach((book, index) => {
+        const fullIndex = startIndex + index;
+        const isFavori = localStorage.getItem(`favori_${book.title}`) === "true";
+        const views = parseInt(localStorage.getItem(`vue_${book.title}`) || "0");
+
+        const bookDiv = document.createElement("div");
+        bookDiv.className = "book";
+        bookDiv.innerHTML = `
+          <h3>${book.title}</h3>
+          <div class="book-actions">
+            <button onclick="toggleFavori('${book.title}')">${isFavori ? "★ Favori" : "☆ Favori"}</button>
+            <span>👁 ${views} vues</span>
+          </div>
+          <iframe src="https://drive.google.com/file/d/${book.driveId}/preview" frameborder="0" allowfullscreen onclick="incrementView('${book.title}')"></iframe>
+        `;
+        bookList.appendChild(bookDiv);
       });
-      bibliotheque.appendChild(div);
-    });
 
-    closeBtn.addEventListener('click', () => {
-      drawer.classList.remove('open');
-      pdfFrame.src = "";
-    });
+      document.getElementById("pageIndicator").textContent = `Page ${currentPage} / ${Math.ceil(books.length / booksPerPage)}`;
+    }
+
+    function toggleFavori(title) {
+      const current = localStorage.getItem(`favori_${title}`) === "true";
+      localStorage.setItem(`favori_${title}`, (!current).toString());
+      renderBooks();
+    }
+
+    function incrementView(title) {
+      const currentViews = parseInt(localStorage.getItem(`vue_${title}`) || "0");
+      localStorage.setItem(`vue_${title}`, (currentViews + 1).toString());
+    }
+
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        renderBooks();
+      }
+    }
+
+    function nextPage() {
+      if (currentPage < Math.ceil(books.length / booksPerPage)) {
+        currentPage++;
+        renderBooks();
+      }
+    }
+
+    function searchBooks() {
+      const query = document.getElementById("searchInput").value.toLowerCase();
+      const filtered = books.filter(book => book.title.toLowerCase().includes(query));
+      if (query === "") {
+        renderBooks();
+        return;
+      }
+      const bookList = document.getElementById("bookList");
+      bookList.innerHTML = "";
+      filtered.forEach(book => {
+        const isFavori = localStorage.getItem(`favori_${book.title}`) === "true";
+        const views = parseInt(localStorage.getItem(`vue_${book.title}`) || "0");
+
+        const bookDiv = document.createElement("div");
+        bookDiv.className = "book";
+        bookDiv.innerHTML = `
+          <h3>${book.title}</h3>
+          <div class="book-actions">
+            <button onclick="toggleFavori('${book.title}')">${isFavori ? "★ Favori" : "☆ Favori"}</button>
+            <span>👁 ${views} vues</span>
+          </div>
+          <iframe src="https://drive.google.com/file/d/${book.driveId}/preview" frameborder="0" allowfullscreen onclick="incrementView('${book.title}')"></iframe>
+        `;
+        bookList.appendChild(bookDiv);
+      });
+    }
+
+    // Initial render
+    renderBooks();
   </script>
-
 </body>
+
 </html>
