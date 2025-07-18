@@ -1,183 +1,293 @@
-<!DOCTYPE html>
-<html lang="fr">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bibliothèque Numérique</title>
-  <style>
+<!DOCTYPE html><html lang="fr"><head>  <meta charset="UTF-8" />  <title>Domaine : Droit</title>  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  <style>
+  
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
+  
+      font-family: 'Segoe UI', sans-serif;
+  
+      background-color: #f3f4f6;
+  
       margin: 0;
-      padding: 0;
-    }
-
-    header {
-      background-color: #007bff;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-
-    .container {
+  
       padding: 2rem;
+  
+      user-select: none;
+  
     }
-
-    .search-bar {
-      margin-bottom: 1.5rem;
+  
+    h1 {
+  
+      text-align: center;
+  
+      color: #2d3748;
+  
     }
+  
 
-    .book {
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      margin-bottom: 1rem;
-      padding: 1rem;
-    }
-
-    .book h3 {
-      margin: 0 0 0.5rem 0;
-    }
-
-    .book-actions {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 1rem;
-    }
-
-    .book iframe {
-      width: 100%;
-      height: 300px;
-      margin-top: 1rem;
-    }
-
-    .pagination {
-      display: flex;
-      justify-content: center;
+  
+    .library {
+  
+      display: grid;
+  
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  
+      gap: 20px;
+  
       margin-top: 2rem;
+  
     }
+  
 
-    .pagination button {
-      margin: 0 0.5rem;
-      padding: 0.5rem 1rem;
+  
+    .drawer {
+  
+      width: 100%;
+  
+      background-color: #fff;
+  
+      border-radius: 15px;
+  
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  
+      overflow: hidden;
+  
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
       cursor: pointer;
+  
     }
-  </style>
-</head>
+  
 
-<body>
-  <header>
-    <h1>Bibliothèque Numérique</h1>
-  </header>
+  
+    .drawer:hover {
+  
+      transform: translateY(-5px);
+  
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+  
+    }
+  
 
-  <div class="container">
-    <input type="text" id="searchInput" class="search-bar" placeholder="Rechercher un livre..." onkeyup="searchBooks()">
+  
+    .drawer img {
+  
+      width: 100%;
+  
+      height: 200px;
+  
+      object-fit: cover;
+  
+    }
+  
 
-    <div id="bookList"></div>
+  
+    .info {
+  
+      padding: 1rem;
+  
+      background-color: #edf2f7;
+  
+      color: #2c5282;
+  
+      text-align: center;
+  
+    }
+  
 
-    <div class="pagination">
-      <button onclick="prevPage()">&laquo; Précédent</button>
-      <span id="pageIndicator"></span>
-      <button onclick="nextPage()">Suivant &raquo;</button>
-    </div>
+  
+    .info h3 {
+  
+      margin: 0.2rem 0;
+  
+    }
+  
+
+  
+    /* Modale */
+  
+    .modal {
+  
+      display: none;
+  
+      position: fixed;
+  
+      z-index: 10;
+  
+      left: 0;
+  
+      top: 0;
+  
+      width: 100vw;
+  
+      height: 100vh;
+  
+      background-color: rgba(0,0,0,0.7);
+  
+      justify-content: center;
+  
+      align-items: center;
+  
+    }
+  
+
+  
+    .modal-content {
+  
+      width: 90%;
+  
+      max-width: 900px;
+  
+      height: 90vh;
+  
+      background-color: white;
+  
+      border-radius: 10px;
+  
+      overflow: hidden;
+  
+      position: relative;
+  
+      display: flex;
+  
+      flex-direction: column;
+  
+    }
+  
+
+  
+    .modal-content iframe {
+  
+      flex: 1;
+  
+      width: 100%;
+  
+      height: 100%;
+  
+      border: none;
+  
+      /* pointer-events retiré pour permettre le scroll */
+  
+    }
+  
+
+  
+    .close-btn {
+  
+      position: absolute;
+  
+      top: 5px;
+  
+      right: 10px;
+  
+      font-size: 24px;
+  
+      cursor: pointer;
+  
+      color: #333;
+  
+      z-index: 20;
+  
+    }
+  
+  </style></head><body>  <h1>📘 Domaine : Droit</h1>  <div class="library"><!-- 1er tiroir avec PDF -->
+
+<div class="drawer" onclick="openModal()">
+
+  <img src="droit.jpeg" alt="Couverture PDF">
+
+  <div class="info">
+
+    <h3>Titre : Code OHADA expliqué</h3>
+
+    <p>Auteur : Maître Élodie Nsimire</p>
+
+    <p style="font-size: 0.9em; color: gray;">(Cliquez pour lire le document)</p>
+
   </div>
 
-  <script>
-    const books = [
-      { title: "Anatomie Générale", driveId: "12M50nDQkoPm0HeX7J-bu1Q12NW9xPhqJ" },
-      { title: "Physiologie Humaine", driveId: "DRIVE_FILE_ID_2" },
-      { title: "Pathologie", driveId: "DRIVE_FILE_ID_3" },
-      // ... Ajoutez jusqu'à 50 ouvrages ici
-    ];
+</div>
 
-    const booksPerPage = 16;
-    let currentPage = 1;
 
-    function renderBooks() {
-      const bookList = document.getElementById("bookList");
-      bookList.innerHTML = "";
 
-      const startIndex = (currentPage - 1) * booksPerPage;
-      const endIndex = startIndex + booksPerPage;
-      const paginatedBooks = books.slice(startIndex, endIndex);
+<!-- 15 tiroirs fictifs supplémentaires -->
 
-      paginatedBooks.forEach((book, index) => {
-        const fullIndex = startIndex + index;
-        const isFavori = localStorage.getItem(`favori_${book.title}`) === "true";
-        const views = parseInt(localStorage.getItem(`vue_${book.title}`) || "0");
+<!-- Tu peux en copier autant que tu veux -->
 
-        const bookDiv = document.createElement("div");
-        bookDiv.className = "book";
-        bookDiv.innerHTML = `
-          <h3>${book.title}</h3>
-          <div class="book-actions">
-            <button onclick="toggleFavori('${book.title}')">${isFavori ? "★ Favori" : "☆ Favori"}</button>
-            <span>👁 ${views} vues</span>
-          </div>
-          <iframe src="https://drive.google.com/file/d/${book.driveId}/preview" frameborder="0" allowfullscreen onclick="incrementView('${book.title}')"></iframe>
-        `;
-        bookList.appendChild(bookDiv);
-      });
+<div class="drawer"><img src="placeholder.jpg" alt=""><div class="info"><h3>Titre fictif</h3><p>Auteur inconnu</p></div></div>
 
-      document.getElementById("pageIndicator").textContent = `Page ${currentPage} / ${Math.ceil(books.length / booksPerPage)}`;
+<div class="drawer"><img src="placeholder.jpg" alt=""><div class="info"><h3>Titre fictif</h3><p>Auteur inconnu</p></div></div>
+
+<div class="drawer"><img src="placeholder.jpg" alt=""><div class="info"><h3>Titre fictif</h3><p>Auteur inconnu</p></div></div>
+
+<div class="drawer"><img src="placeholder.jpg" alt=""><div class="info"><h3>Titre fictif</h3><p>Auteur inconnu</p></div></div>
+
+<div class="drawer"><img src="placeholder.jpg" alt=""><div class="info"><h3>Titre fictif</h3><p>Auteur inconnu</p></div></div>
+
+<div class="drawer"><img src="placeholder.jpg" alt=""><div class="info"><h3>Titre fictif</h3><p>Auteur inconnu</p></div></div>
+
+<div class="drawer"><img src="placeholder.jpg" alt=""><div class="info"><h3>Titre fictif</h3><p>Auteur inconnu</p></div></div>
+
+<div class="drawer"><img src="placeholder.jpg" alt=""><div class="info"><h3>Titre fictif</h3><p>Auteur inconnu</p></div></div>
+
+<div class="drawer"><img src="placeholder.jpg" alt=""><div class="info"><h3>Titre fictif</h3><p>Auteur inconnu</p></div></div>
+
+<div class="drawer"><img src="placeholder.jpg" alt=""><div class="info"><h3>Titre fictif</h3><p>Auteur inconnu</p></div></div>
+
+<div class="drawer"><img src="placeholder.jpg" alt=""><div class="info"><h3>Titre fictif</h3><p>Auteur inconnu</p></div></div>
+
+<div class="drawer"><img src="placeholder.jpg" alt=""><div class="info"><h3>Titre fictif</h3><p>Auteur inconnu</p></div></div>
+
+<div class="drawer"><img src="placeholder.jpg" alt=""><div class="info"><h3>Titre fictif</h3><p>Auteur inconnu</p></div></div>
+
+<div class="drawer"><img src="placeholder.jpg" alt=""><div class="info"><h3>Titre fictif</h3><p>Auteur inconnu</p></div></div>
+
+<div class="drawer"><img src="placeholder.jpg" alt=""><div class="info"><h3>Titre fictif</h3><p>Auteur inconnu</p></div></div>
+
+  </div>  <!-- Modale -->  <div class="modal" id="pdfModal"><div class="modal-content">
+
+  <span class="close-btn" onclick="closeModal()">×</span>
+
+  <iframe src="droit.pdf#toolbar=0&navpanes=0"></iframe>
+
+</div>
+
+  </div>  <script>
+  
+    function openModal() {
+  
+      document.getElementById("pdfModal").style.display = "flex";
+  
     }
+  
 
-    function toggleFavori(title) {
-      const current = localStorage.getItem(`favori_${title}`) === "true";
-      localStorage.setItem(`favori_${title}`, (!current).toString());
-      renderBooks();
+  
+    function closeModal() {
+  
+      document.getElementById("pdfModal").style.display = "none";
+  
     }
+  
 
-    function incrementView(title) {
-      const currentViews = parseInt(localStorage.getItem(`vue_${title}`) || "0");
-      localStorage.setItem(`vue_${title}`, (currentViews + 1).toString());
-    }
-
-    function prevPage() {
-      if (currentPage > 1) {
-        currentPage--;
-        renderBooks();
+  
+    // Protection basique
+  
+    document.addEventListener('contextmenu', e => e.preventDefault());
+  
+    document.addEventListener('keydown', function(e) {
+  
+      if (
+  
+        e.key === 'F12' ||
+  
+        (e.ctrlKey && ['s','u','p'].includes(e.key.toLowerCase())) ||
+  
+        e.key === 'PrintScreen'
+  
+      ) {
+  
+        e.preventDefault();
+  
       }
-    }
-
-    function nextPage() {
-      if (currentPage < Math.ceil(books.length / booksPerPage)) {
-        currentPage++;
-        renderBooks();
-      }
-    }
-
-    function searchBooks() {
-      const query = document.getElementById("searchInput").value.toLowerCase();
-      const filtered = books.filter(book => book.title.toLowerCase().includes(query));
-      if (query === "") {
-        renderBooks();
-        return;
-      }
-      const bookList = document.getElementById("bookList");
-      bookList.innerHTML = "";
-      filtered.forEach(book => {
-        const isFavori = localStorage.getItem(`favori_${book.title}`) === "true";
-        const views = parseInt(localStorage.getItem(`vue_${book.title}`) || "0");
-
-        const bookDiv = document.createElement("div");
-        bookDiv.className = "book";
-        bookDiv.innerHTML = `
-          <h3>${book.title}</h3>
-          <div class="book-actions">
-            <button onclick="toggleFavori('${book.title}')">${isFavori ? "★ Favori" : "☆ Favori"}</button>
-            <span>👁 ${views} vues</span>
-          </div>
-          <iframe src="https://drive.google.com/file/d/${book.driveId}/preview" frameborder="0" allowfullscreen onclick="incrementView('${book.title}')"></iframe>
-        `;
-        bookList.appendChild(bookDiv);
-      });
-    }
-
-    // Initial render
-    renderBooks();
-  </script>
-</body>
-
-</html>
+  
+    });
+  
+  </script></body></html>
