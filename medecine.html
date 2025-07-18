@@ -240,7 +240,7 @@
 
         drawer.addEventListener("click", (e) => {
           if (!e.target.classList.contains("favorite")) {
-            pdfFrame.src = livre.pdf + "#toolbar=0&navpanes=0";
+          pdfFrame.src = livre.pdf + "?raw=true#toolbar=0&navpanes=0";
             modal.style.display = "flex";
             const count = drawer.querySelector(".view-count");
             count.textContent = parseInt(count.textContent) + 1;
