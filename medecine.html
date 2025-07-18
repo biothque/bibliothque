@@ -179,7 +179,8 @@
       { titre: "Gynécologie", auteur: "Elongi", image: "med.jpg", pdf: "GYNE prof elongi-1.pdf" },
       { titre: "Gynecologie", auteur: "Lansan", image: "med.jpg", pdf: "Gynecologie pour lE comte, Lansan_033727.pdf" },
       { titre: "Gynécologie", auteur: "Kitenge Kayembe", image: "med.jpg", pdf: "GYNECOLOGIE.pdf" },
-      { titre: "Gynecologie_Obstetrique", auteur: " N. DALY-SCHVEITZER", image: "med.jpg", pdf: "Gynecologie_Obstetrique.pdf" }
+      { titre: "Gynecologie_Obstetrique", auteur: " N. DALY-SCHVEITZER", image: "med.jpg", pdf: "Gynecologie_Obstetrique.pdf" },
+      { titre: "Nouveau titre", auteur: "Nom", image: "med.jpg", pdf: "fichier.pdf" },
       { titre: "Nouveau titre", auteur: "Nom", image: "med.jpg", pdf: "fichier.pdf" },
       { titre: "Nouveau titre", auteur: "Nom", image: "med.jpg", pdf: "fichier.pdf" },
       { titre: "Nouveau titre", auteur: "Nom", image: "med.jpg", pdf: "fichier.pdf" },
@@ -318,16 +319,15 @@
           </div>
         `;
 
-       drawer.addEventListener("click", (e) => {
-  if (!e.target.classList.contains("favorite")) {
-    const lienPDF = livre.pdfGithub || livre.pdf;
-    pdfFrame.src = lienPDF + "#toolbar=0&navpanes=0";
-    modal.style.display = "flex";
-    const count = drawer.querySelector(".view-count");
-    count.textContent = parseInt(count.textContent) + 1;
-    history.pushState({ modal: true }, "");
-  }
-});
+        drawer.addEventListener("click", (e) => {
+          if (!e.target.classList.contains("favorite")) {
+            pdfFrame.src = livre.pdf + "#toolbar=0&navpanes=0";
+            modal.style.display = "flex";
+            const count = drawer.querySelector(".view-count");
+            count.textContent = parseInt(count.textContent) + 1;
+            history.pushState({ modal: true }, "");
+          }
+        });
 
         library.appendChild(drawer);
       });
@@ -405,4 +405,3 @@
   </script>
 </body>
 </html>
-
