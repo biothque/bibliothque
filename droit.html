@@ -13,7 +13,7 @@
 
     body::before {
       content: "";
-      background-image: url('background.jpg'); /* remplace par le chemin de ton image */
+      background-image: url('uk.jpg'); /* remplace par le chemin de ton image */
       background-size: cover;
       background-position: center;
       filter: blur(8px);
@@ -87,13 +87,13 @@
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <script>
     (function() {
-      emailjs.init("YOUR_USER_ID"); // <-- Remplace par ton ID EmailJS
+      emailjs.init("service_faxh7mq"); // <-- Remplace par ton ID EmailJS
     })();
 
     document.getElementById("commandeForm").addEventListener("submit", function(e) {
       e.preventDefault();
 
-      emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+      emailjs.send("service_faxh7mq", "YOUR_TEMPLATE_ID", {
         nom: document.getElementById("nom").value,
         email: document.getElementById("email").value,
         ouvrage: document.getElementById("ouvrage").value,
@@ -109,3 +109,4 @@
   </script>
 </body>
 </html>
+
